@@ -1,0 +1,11 @@
+# The Warwick router contains two addresses:  an internal variation responsible
+# to link with the internal part and an external address responsible to
+# broadcust to the public internet via the ISP.
+
+ifconfig eth1 hw ether 00:00:02:22:22:22
+ifconfig eth1 192.168.65.1/24
+
+ifconfig eth2 hw ether 00:00:03:33:33:33
+ifconfig eth2 213.1.133.2/27
+
+route add default gw 213.1.133.1

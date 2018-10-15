@@ -1,0 +1,4 @@
+# webserver connected to the public internet.
+
+ifconfig eth6 hw ether 00:00:06:66:66:66
+ifconfig eth6 213.1.133.3/27
