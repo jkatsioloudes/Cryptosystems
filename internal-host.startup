@@ -1,0 +1,4 @@
+# An example private host sitting inside Warwick's internal network.
+# Therefore, this host is allocated a Warwick's private IP address.
+ifconfig eth0 hw ether interal-host-mac-address
+ifconfig eth0 192.168.65.2/24
