@@ -1,0 +1,29 @@
+Results for different Ping Combinations:
+
+FROM		TO				SUCCESS?
+mobile-user-0	internal-host (192.168.65.2)	N	
+mobile-user-0	router (192.168.65.1)		N	
+mobile-user-0	router (213.1.133.2)		Y
+mobile-user-0	internet (213.1.133.1)		Y
+mobile-user-0	internet (32.0.0.1)		Y	
+mobile-user-0	apache (213.1.133.3)		N
+
+router 		internal-host (192.168.65.2)	Y	
+router 		internet (213.1.133.1)		Y
+router 		internet (32.0.0.1)		Y
+router 		apache (213.1.133.3)		Y
+router 		mobile-user-0 (32.0.0.2)	Y	
+
+internet 	internal-host (192.168.65.2)	Net unreach
+internet 	router (192.168.65.1)		Net unreach
+internet 	router (213.1.133.2)		Y
+internet 	apache (213.1.133.3)		Y
+internet 	mobile-user-0 (32.0.0.2)	Y
+
+internal-host 	router (192.168.65.1)		Y	
+internal-host 	router (213.1.133.2)		Y	
+internal-host 	internet (213.1.133.1)		N
+internal-host 	internet (32.0.0.1)		N	
+internal-host 	apache (213.1.133.3)		N
+internal-host 	mobile-user-0 (32.0.0.2)	N
+
