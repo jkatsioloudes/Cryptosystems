@@ -1,0 +1,76 @@
+PSK
+http://www.internet-computer-security.com/VPN-Guide/PSK.html
+
+PSK is a key both peers use to identify themselves to each other. If one pre-shared key is different from the other, then the authentication will not be successful. In a real world scenario you would specify this on a VPN Gateway at one site, such as a firewall with VPN capabilities and then specify the exact same key on the other site’s VPN Firewall. So it is a way for a device to prove it is authorised by providing a pre-shared key identical to the opposite peer in negotiation.
+
+Pre shared keys are easier to configure than digital certificates, and are typically used for small to medium sized businesses that require a VPN connection. You would usually communicate a pre-shared key via the phone or in person so that it is not captured by anyone such as a hacker sniffing the network.
+
+You would then specify your pre-shared key within your VPN configurations, and do the same at the peer end. A VPN gateway should use long Pre-shared keys to eliminate chances of being hacked, 10 plus characters is recommended. For large networks though, digital certificates should be implemented over pre-shared keys as digital certificates are scalable.
+
+
+X509
+https://www.embedded.com/electronics-blogs/say-what-/4442799/IoT-security--when-X-509-certificate-authentication-may-not-work
+
+In cryptography, X.509 is an important standard for a public key infrastructure (PKI) to manage digital certificates and their associated public key for asymmetric encryption (public-key encryption). X.509 is a key component in the Transport Layer Security (TLS/SSL) protocol -- a security layer used to secure many IoT protocols.
+
+The TLS protocol requires the server to have an X.509 certificate; however, an X.509 certificate is optional for the client. The server certificate enables the client to authenticate the server and enables the TLS protocol to setup a secure (encrypted) communication channel with the server. A client certificate, in addition, enables the server to authenticate the client. This is known as mutual authentication, where the client authenticates the server (required) and the server authenticates the client (optional).
+
+From an authentication perspective, X.509 certificates undeniably make a solution more secure, However, using X.509 certificate authentication greatly complicates a design if client-side certificates are required.
+
+As was mentioned above, a client-side certificate enables the server to authenticate the client and can be used by the server to uniquely identify each client connected to an IoT solution. Creating a unique X.509 Certificate and the corresponding private key for each device greatly increases the complexity in the manufacturing process. When these certificates are created, they must be signed by a Certificate Authority (CA). To automate the manufacturing process, the CA certificate and the corresponding CA certificate's private key must be available during the manufacturing process. Exposing the CA certificate's private key to anyone outside your organization is a major security issue. Therefore, the CA certificate's private key should be locked up in a vault with only specified individuals having access to it.
+
+A server must implement what is known as a certificate revocation list since it may be possible for a hacker to extract the certificate/private key pair from a device and to use this key to compromise an IoT solution. The revocation list includes the certificate's serial number of all certificates that have been exploited. For this to work, you must first find a way to detect non-conforming devices connecting to your IoT solution and then add the certificate's serial number to the revocation list. A non-conforming device could be one where a hacker that has managed to extract an X.509 certificate and the corresponding private key from a device and is then using this certificate for gaining access to the IoT solution. Such detection is very difficult.
+
+In addition, X.509 certificates include an expiration date making it mandatory for IoT solutions to update the certificate from time to time.
+
+As you can see, using client-side X.509 certificate authentication from an administrative perspective may be very difficult to deploy. This is likely the reason most existing solutions are based on using the same X.509 certificate/private key in all devices. SEC consult, an information security advisor, has published two reports: the first shows how industry-wide HTTPS certificate and SSH key reuse endangers millions of devices worldwide, while an updated report only nine months later revealed that such reuse had increased by 40%, further illustrating the growth in incorrect X.509 certificate authentication usage.
+
+
+PSK Vs Certificate
+https://security.stackexchange.com/questions/165546/pre-shared-public-key-vs-certificate
+
+Let's compare the workflows of the two processes, specifically how the handle key compromise.
+Pre-shared Secret
+
+The server generates a keypair, you copy this to every client machine (manually, through a script, etc). When connecting to the server, the client will check that the public key presented matches the one they have cached for that server (conceptually, this is the same as SSH's fingerprint id method).
+
+Upside: no need for the inconvenience of getting a CA-signed certificate. You can generate the server's keypair and start deploying it to clients immediately.
+
+Downside: Recovering from a key compromise is difficult or impossible because there is no mechanism for the server to notify clients of a key compromise, except by pushing a new keypair to all clients. Consider that an attacker has the server's private key and can intercept traffic between the client and server (both to block the updated keypair push, and to man-in-the-middle the client's connection to the server). The client will trust the attacker and believe that it is talking to the authentic server and there is nothing you can do to prevent this because at a fundamental level, pre-shared secrets have no revocation mechanism.
+Certificate
+
+Yes, it's annoying (and sometimes expensive) to get a certificate, but the trust no longer depends on your ability to push the pre-shared key to the clients.
+
+Part of the validation process for a certificate is for the client to reach out to the CA and ensure that the certificate is not revoked and if it fails to reach the CA, this counts as a failure. Spoofing this revocation check requires the attacker to compromise not only the server's private key, but the CA's private key as well. If the server realizes that it's keypair has been compromised and asks the CA to revoke it, all clients will know immediately because the online revocation checks will fail.
+
+Revocation is the main reason to use certificates here, but also consider that an attacker can intercept the initial public key push and replace it with their own public key. Maybe you are the network admin and can guarentee to deploy the public keys securely, but certificates make this a moot point because even if the attacker can intercept the certificate deployment, spoofing a cert requires compromising the CA.
+
+
+Same question from https://community.cisco.com/t5/other-security-subjects/pre-shared-key-vs-certificate-is-which-best-and-why/td-p/61160
+
+In security point of view, using CA server and certificate will add more security to your VPN network, that is for sure. Certificate has much longer public and private key then pre-shared. Certificate is not easy to be exported, once the laptop has been stolen, you can revoke the certificate from the Cert server.
+
+If you are using pre-shared key, you need change all other PC's group password in case someone get he group password from the stolen PC.
+
+If you have more than 10 LAN to LAN sites, using certificate can make the configuration simpler, because you do not need to config pre-shared keys for each site.Use same Cert server and enroll all the routers to it , then it will be done.
+
+***
+
+*For the remote access point of view, You need enroll all your clients(depending or username or PC), each client will have one certificate. If you have several hundreds of users, that will increase your workload for sure.*
+
+
+Same question from https://security.stackexchange.com/questions/48882/advantage-mutual-authentication-over-psk
+
+"Pre-shared key" is indeed a valid model, and simple, if you can pull it off. Asymmetric cryptography, with public and private keys, and certificates, was invented to solve the secret key distribution problem: in general, it is hard to ensure that all pairs of systems/people who must securely talk to each other actually share a secret value. In a client-server setup, where client and server are distinct machines, then a shared secret must necessarily have travelled from one machine to the other. Travelling secrets are "less secret". With asymmetric cryptography, only public values actually go over the wires; private keys can remain local through their complete life cycle, and that's usually a good idea.
+
+Similarly, if client and server share the same secret value, then an attacker hijacking either machine learns the secret and can impersonate both. With asymmetric cryptography, an attacker who plunders the RAM or disk of the client can later on connect to the server and authenticate as a client, but cannot run a fake server which would fool the client.
+
+These are reasons why a pre-shared key mechanism, though tempting (it is lighter on CPU, and involves none of the dreaded X.509/CA business), make in practice imply some weaknesses, depending on how the system is installed and maintained.
+
+(Of course, in all of the above I suppose that you do not do anything stupid, such as having a shared "secret" between the server and 10000 clients; if 10000 clients know a "secret" then it no longer is a secret. Appropriate pre-shared key systems use a different key for each client-server pair. When the pre-shared key is a human-remembered secret, i.e. a password, then extra care must be employed, because passwords are weak.
+
+
+CA Hierarchy
+
+
+
