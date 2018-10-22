@@ -71,6 +71,81 @@ These are reasons why a pre-shared key mechanism, though tempting (it is lighter
 
 
 CA Hierarchy
+full text here: https://sites.google.com/site/ddmwsst/digital-certificates
+
+CAs are hierarchical in structure. There are generally three types of hierarchies, and they are denoted by the number of tiers.
+
+Single/One Tier Hierarchy
+
+A single tier Hierarchy consists of one CA. The single CA is both a Root CA and an Issuing CA. A Root CA is the term for the trust anchor of the PKI. Any applications, users, or computers that trust the Root CA trust any certificates issued by the CA hierarchy. The Issuing CA is a CA that issues certificates to end entities. For security reasons, these two roles are normally separated. When using a single tier hierarchy they are combined. 
+
+Two Tier Hierarchy
+
+A two tier hierarchy is most common. In some ways it is a compromise between the One and Three Tier hierarchies. In this design there is a Root CA that is offline, and a subordinate issuing CA that is online. The level of security is increased because the Root CA and Issuing CA roles are separated. But more importantly the Root CA is offline, and so the private key of the Root CA is better protected from compromise. It also increases scalability and flexibility. This is due to the fact that there can be multiple Issuing CA’s that are subordinate to the Root CA. This allows you to have CA’s in different geographical location, as well as with different security levels. 
+
+Three Tier Hierarchy
+
+Specifically the difference between a Two Tier Hierarchy is that second tier is placed between the Root CA and the issuing CA. The placement of this CA can be for a couple different reasons. The first reason would be to use the second tier CA as a Policy CA. In other words the Policy CA is configured to issue certificates to the Issuing CA that is restricted in what type of certificates it issues. The Policy CA can also just be used as an administrative boundary. In other words, you only issue certain certificates from subordinates of the Policy CA, and perform a certain level of verification before issuing certificates, but the policy is only enforced from an administrative not technical perspective.
+
+The other reason to have the second tier added is so that if you need to revoke a number of CAs due to a key compromise, you can perform it at the Second Tier level, leaving other “branches from the root” available. It should be noted that Second Tier CAs in this hierarchy can, like the Root, be kept offline.
+
+
+Chain/Hierarchy of Trust
+https://docs.microsoft.com/en-us/windows/desktop/seccrypto/hierarchy-of-trust
+
+For digital certificates to be effective, users of certificates must have a high level of trust in them. There are cases where a user does not trust the issuer of a certificate. This could happen if the certificate user has never heard of the certification authority and therefore is uncomfortable with accepting a certificate from that issuer at face value. This problem is addressed in the certifying process by a hierarchy of trust.
+
+A hierarchy of trust begins with at least one certification authority that is trusted by all entities in the certificate chain. This can be an internal certification authority administrator or an external company or organization that specializes in verifying identities and issuing certificates. This authority is called the root authority. The root authority then certifies other certification authorities, called first-tier certification authorities, who can then issue certificates and also certify additional or second-tier certification authorities. This situation is shown in the following illustration.
+
+The identity of the certification authority issuing a certificate is part of a certificate. That certification authority is called the certificate's issuer. When a certificate's issuer is a tier 1 or tier 2 certification authority, the receiver of that certificate can determine whether the certificate's issuer is certified as a valid certification authority by a certification authority at a level above it, and that the higher level certification authority is certified as a valid certification authority by still a higher level certification authority until it is determined that a chain of trust exists between the lowest level certification authority and the root certification authority.
+
+
+The advantages of using a two-tier certificate authority hierarchy
+http://blogs.microsoft.co.il/yuval14/2013/08/16/the-benefits-of-two-level-certificate-authority-hierarchy/
+
+1. Performance & Scalability & Redundancy
+
+Using multiple Subordinate CA/Intermediate CA allow the organization to split the load of processing of PKI tasks to multiple
+
+server. By using multiple Subordinate CA/Intermediate CA the organization can provides answer to a common scenarios like:
+
+a. Failure of one (or more) Subordinate CA/Intermediate CA server wouldn’t reduce the availability of the PKI service in the organization.
+
+b. By installing Subordinate CA/Intermediate CA in each Active Directory site, users and/or computers digital certificates would be issue/renew from the nearest Subordinate CA/Intermediate CA & not over slow WAN lines.
+
+c. By installation multiple Subordinate CA/Intermediate CA the total load on each Subordinate CA/Intermediate CA would be reduced. Reducing the load of each Subordinate CA/Intermediate CA would allow the the organization to answer to the SLA (Service Level Agreement) requirements for issue & renewing digital certificates.
+
+2. Legalization
+
+In many organizations using PKI for common legal tasks, like signing documents, allow SSL/TLS access for payment systems, etc..
+
+Usually each organization publish two legal documents to his customers/end users that cover legal & service issues:
+
+-Certificate policy (CP)
+
+-Certificate practice statement (CPS)
+
+Each CA can contain only a single Certificate policy (CP) document & a single Certificate practice statement (CPS) document.
+
+In case that the organization need to publish a multiple versions of Certificate policy (CP) document & a a multiple versions Certificate practice statement (CPS) document – additional Subordinate CA/Intermediate CA would be needed.
+
+3. Auditing
+
+In case that a separate Auditing may need to implemented, using a multiple Subordinate CA/Intermediate CA may allow you to answer to this requirement. 
+
+4. SOD – Separation Of Duties
+
+By using multiple Subordinate CA/Intermediate CA the organization can provides answer to a common scenarios like:
+
+a. Allow each IT team to mange his unique Subordinate CA/Intermediate CA.
+
+b. Reduce the exposure of each IT team to digital certificates that shouldn’t be manage by this IT team.
+
+c. Allow each Subordinate CA/Intermediate to use only a specific Certificate Templates.
+
+5. Reducing the impact of compromise Subordinate CA/Intermediate CA / Subordinate CA/Intermediate CA theft
+
+By using multiple Subordinate CA/Intermediate CA the organization the impact of compromise Subordinate CA/Intermediate CA and/or Subordinate CA/Intermediate CA theft – may be less drastic to the organization.
 
 
 
