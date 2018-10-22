@@ -1,4 +1,5 @@
 Results for different Ping Combinations:
+(BEFORE CERTIFICATES)
 
 FROM		TO				SUCCESS?
 mobile-user-0	internal-host (192.168.65.2)	N	
