@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this script assumes that the folders ca/gateway, ca/intermediate, gateway and mobile worker pre-exist having a corresponding openssl.cnf scirpt inside.
+# this script assumes that the folders ca/router, ca/intermediate, router and mobile worker pre-exist having a corresponding openssl.cnf scirpt inside.
 
 
 ######### ROOT CA ###########
@@ -78,47 +78,47 @@ cp ./ca/root/signed/intermediate.cert.pem ./ca/intermediate/certs/
 chmod 444 ./ca/intermediate/certs/intermediate.cert.pem
 
 
-########## GATEWAY ####################
-# prep the gateway dirs
+########## ROUTER ####################
+# prep the router dirs
 cd ${X509DIR}
-cd gateway
+cd router
 touch ipsec.conf ipsec.conf.x509 ipsec.secrets
 mkdir ipsec
 cd ipsec
 mkdir cacerts certs csr private
 cd ../
 
-# generate the gateway key (no aes256 this time to permit gateway unattended restart)
-openssl genrsa  -out ipsec/private/gateway.key.pem 1024
-chmod 400 ipsec/private/gateway.key.pem
+# generate the router key (no aes256 this time to permit router unattended restart)
+openssl genrsa  -out ipsec/private/router.key.pem 1024
+chmod 400 ipsec/private/router.key.pem
 
-# generate the gateway cert
+# generate the router cert
 openssl req -config ./openssl.cnf \
-      -key ipsec/private/gateway.key.pem \
+      -key ipsec/private/router.key.pem \
       -new -sha256 \
-      -out ipsec/csr/gateway.csr.pem
+      -out ipsec/csr/router.csr.pem
 
 
-######### INTERMDEDIATE CA SIGNS GATEWAY CSR #################
-# send the gateway cert csr to the intermediate ca
+######### INTERMDEDIATE CA SIGNS ROUTER CSR #################
+# send the router cert csr to the intermediate ca
 cd ${X509DIR}
-cp ./gateway/ipsec/csr/gateway.csr.pem ./ca/intermediate/unsigned/
+cp ./router/ipsec/csr/router.csr.pem ./ca/intermediate/unsigned/
 
-# get the gateway cert signed by the intermediate cert
+# get the router cert signed by the intermediate cert
 cd ./ca/intermediate/
 openssl ca -config ./openssl.cnf \
       -days 375 \
       -notext -md sha256 \
-      -in unsigned/gateway.csr.pem \
-      -out signed/gateway.cert.pem
+      -in unsigned/router.csr.pem \
+      -out signed/router.cert.pem
 
 # verify the cert
-openssl x509 -noout -text -in signed/gateway.cert.pem
+openssl x509 -noout -text -in signed/router.cert.pem
  
-# return it to the gateway
+# return it to the router
 cd ${X509DIR}
-cp ./ca/intermediate/signed/gateway.cert.pem ./gateway/ipsec/certs
-chmod 444 ./gateway/ipsec/certs/gateway.cert.pem
+cp ./ca/intermediate/signed/router.cert.pem ./router/ipsec/certs
+chmod 444 ./router/ipsec/certs/router.cert.pem
 
 
 ################# MOBILE-WORKER-0 ########
@@ -166,8 +166,7 @@ chmod 444 ./mobile-worker-0/ipsec/certs/mobile-worker-0.cert.pem
 
 ################# PUT THE ROOT CERT ON ALL CLIENTS ########
 cd ${X509DIR}
-cp ./ca/root/certs/ca.cert.pem ./gateway/ipsec/cacerts/
+cp ./ca/root/certs/ca.cert.pem ./router/ipsec/cacerts/
 cp ./ca/root/certs/ca.cert.pem ./mobile-worker-0/ipsec/cacerts/
 
-
-echo "/// SCRIPT FINISHED ///"
+echo "/// SCRIPT FINISHED SUCCESSFULLY! ///"
