@@ -279,7 +279,8 @@ Having direct access only to the web-enabled SSL applications also means that us
 SSL VPN’s have been gaining in prevalence and popularity; however they are not the right solution for every instance. Likewise, IPSec VPN’s are not suited for every instance either. Vendors are continuing to develop ways to expand the functionality of the SSL VPN and it is a technology that you should watch closely if you are in the market for a secure remote networking solution. For now, it is important to carefully consider the needs of your remote users and weigh the pros and cons of each solution to determine what works best for you.
 
 
-CREATE X509 USING OPENSSL AND/OR IPSEC?
+CREATE X509 USING OPENSSL AND/OR IPSEC? 
+Seems like yes, given that there is a way to generate certificates using openssl (the internet is full of those) bu t also ways through StrongSwan.
 
 https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
 
@@ -292,7 +293,66 @@ In any case, you'll need to invoke 20+ different functions of the OpenSSL API to
 For a more detailed answer, please see Nathan Osman's explanation below.
 
 
+StrongSwan
 
+https://wiki.strongswan.org/projects/strongswan/wiki/IntroductiontostrongSwan
+
+strongSwan is a complete IPsec solution providing encryption and authentication to servers and clients.
+It can be used to secure communications with remote networks, so that connecting remotely is the same as
+connecting locally
+
+This paragraph was interesting once everything is set up:
+
+The mentioned distinction between policies and SAs often leads to misconceptions. For instance, referring to the image
+above, if host moon has a site-to-site tunnel to host sun (connecting the two networks 10.1.0.0/24 and 10.2.0.0/24),
+and host carol has a roadwarrior connection to host sun (from which carol received a virtual IP address of 10.3.0.10),
+then carol wont be able to automatically communicate with alice, even if forwarding is enabled on sun. This is because
+there is no IPsec policy allowing traffic between carol (10.3.0.10) and alice (10.1.0.10). An additional SA between moon
+and sun, connecting the virtual subnet 10.3.0.0/24 with 10.1.0.0/24 would be a possible solution to this issue.
+
+Generally, IPsec processing and routing are two different topics. IPsec is often just bumped into the stack (policy based)
+and the original routing decision for the unprotected packet also applies to the protected packet.
+This is the reason charon, by default, installs specific routes to the remote part of the TS (in newer versions of charon (>5.5.0),
+routes aren't installed for transport mode CHILD_SAs).
+An exception to this is route based IPsec, which uses interfaces to control what packets are going to be
+processed by each tunnel to a unique participant. Route based IPsec is less flexible
+than policy based IPsec.
+
+
+strongSwan provides several methods to do this:
+
+- Public Key Authentication: 
+This uses RSA or ECDSA X.509 certificates to verify the authenticity of the peer.
+Certificates can be self-signed, in which case they have to be installed on all peers, or signed by a common
+Certificate Authority (CA). The latter simplifies deployment and configuration a lot as the gateway only
+needs the CA certificate to authenticate all peers that provide a valid certificate signed by that CA.
+Certificate Revocation Lists (CRLs) or the Online Certificate Status Protocol (OCSP) may be
+used to verify the validity of certificates.
+
+To securely store private keys smart cards may be used via the PKCS#11 plugin.
+In order to prevent man-in-the-middle attacks the identity claimed by the peer has to be confirmed by
+the certificate, either by the subject or a subjectAltName extension.
+
+- Pre-Shared-Key (PSK): 
+A pre-shared-key is an easy to deploy option but it requires strong secrets to be secure.
+If the PSK is known to many users (which is often the case with IKEv1 XAuth with PSK) any user who knows
+the secret could impersonate the gateway. Therefore this method is not recommended for large scale
+deployments.
+
+
+STRONGSWAN'S PKI
+
+To use certificate based authentication you'll need to create either self-signed certificates or setup a whole public-key
+infrastructure (PKI), consisting of a Certificate Authority (CA), optional intermediate CAs and end-entity certificates plus
+certificate revocation lists (CRL) or other methods like OCSP to verify the validity of certificates.
+
+One of the easiest ways to generate certificates is to use the ipsec pki utility. Since setting up a whole PKI can be quite
+complex, we only provide instructions to get you started.
+
+OpenSSL is also a widespread alternative to generate certificates, as are several GUI based CA management utilities.
+Commercial CA management tools like Microsoft's are also often used for large scale CAs.
+
+The generated leaf (end) certificates need to authenticate the corresponding peer's IKE ID for authentication to succeed.
 
 
 
