@@ -148,4 +148,159 @@ c. Allow each Subordinate CA/Intermediate to use only a specific Certificate Tem
 By using multiple Subordinate CA/Intermediate CA the organization the impact of compromise Subordinate CA/Intermediate CA and/or Subordinate CA/Intermediate CA theft – may be less drastic to the organization.
 
 
+notes-on-ipsec (ipsec) Vs create-x509.sh (openssl)
+I have noticed that the difference is the commands openssl and ipsec whereas the logic followed is similar including the creation/generation of a private key, then certificate, signing of certifiate from the corresponding hierarchy.  However, what is the difference between ipsec and opensll?
+
+First things first: OpenSSL is an open source implementation of the SSL and TLS protocols.
+
+Q: 
+https://stackoverflow.com/questions/4952339/ipsec-vs-openssl-vs-pgp
+
+IPSec is employed at the IP level, SSL at the transport level and PGP at the application level. In some lecture not it says:
+IPSEC: Most general solution but least flexible SSL: Still very general and some flexibility PGP: Least general but very flexibel.
+I guess the general refers to what kind of protocol I can secure. With IPSEC I can secure everything that uses TCP or UDP. PGP is the least general because it just encrypts emails and is therefore very specific. Is that understanding right?
+However I have no idea for what the flexibilty refers in this context, anyone an idea? Has this to do with extensibility?
+
+A:
+IPSEC: Its an Internet layer protocol, which means anything that runs above the IP layer, such as TCP or UDP for example, or any other newer protocol, will be encrypted by IPSEC. Now however, it is a protocol for encryption/authentication of the packets/protocol above it and only this, thus its less flexible in SOME sense compared to the other two but its still fairly flexible if you need network encryption.
+
+SSL: Is another encryption protocol, similar (I guess) to IPSEC, however it operates at a higher layer than IPSEC. Basically it operates on the Application layer which means it is a protocol that runs on top of TCP, UDP, etc...
+
+Now one problem with IPSEC is that its flexible in some respect in that its lower in the network layer, however this also poses problem in that devices needs to support IPSEC protocol itself, and often cheap consumer routers don't. So in a sense SSL would be more flexible than IPSEC because it operates on a higher layer.
+
+PGP: Is a completely different domain from SSL/IPSEC, because SSL/IPSEC restricts their-selves to network encryption, they don't deal with encryption of files or any other data, all they deal with is the encryption of "bytes" that are going over the network and once the other end has read in the bytes its going to be sitting there unencrypted.
+
+Now PGP is an application/standard that you can use to encrypt files with your destination public key and then only the destination's private key can decrypt the file. Anyway you can encrypt a file, email, or what so ever then transport it over the network to the destination and it would achieve the same thing. But on the other hand you can also store the file on disk encrypted or copy it to an external harddrive for example, and walk down the hallway and give it to your destination.
+
+So in summary IPSEC/SSL are somewhat roughly equivalent, they run on different network layers, and PGP is an entirely different domain from IPSEC/SSL but you can still use PGP to encrypt some piece of data and then transfer it over the network.
+
+So really in the sense of flexibility, especially in the PGP context is in that you can use it for other things such as storing encrypted files on disk, or can use your private key to sign some piece of documentation/file and anyone can use your public key to prove that it came from you.
+
+A:
+Every encryption protocol only works if you have support at both ends.
+
+SSL was the easiest to deploy, because it was built into the browsers and the web servers. For the most part, everybody who wanted to run a web server already had SSL support built-in---they just had to be technically savvy to turn it on (and to purchase a cert or willing to live with a warning to the end user.
+
+One of the nice things about SSL is that it has key-management built in.
+
+IPSEC does provide host-to-host encryption. However the underlying design was so flexible that multiple IPSEC systems couldn't communicate with either other unless they were identically configured. Worse, key management wasn't part of the protocol for many years. Even there there were grand plans for systems that automatically recognized that there were IPSEC-enabled systems on both ends and automatically engaged, this never worked (still doesn't work).
+
+PGP is a static message encryption system. It doesn't encrypt stuff that's interactive. And you shouldn't use PGP, you should use S/MIME, as its already integrated into Apple Mail, Evolution, Outlook Express, Outlook, Thunderbird, etc.
+
+So yes, IPSEC would be a better choice, but it's too hard to use. PGP doesn't do enough. SSL hit the sweet spot, which is why it dominates.
+
+
+Q:
+https://security.stackexchange.com/questions/63330/are-there-any-reasons-for-using-ssl-over-ipsec
+
+Reasons for using SSL over IPSec
+
+A:
+There are different layers of secure transport to consider here:
+
+VPNs
+SSL VPN (including tunnels)
+IPSec VPN
+SSL/TLS for individual services
+IPSec vs SSL VPNs
+
+Both SSL and IPSec VPNs are good options, both with considerable security pedigree, although they may suit different applications.
+
+IPsec VPNs operate at layer 3 (network), and in a typical deployment give full access to the local network (although access can be locked down via firewalls and some VPN servers support ACLs). This solution is therefore better suited to situations where you want remote clients to behave as if they were locally attached to the network, and is particularly good for site-to-site VPNs. IPSec VPNs also tend to require specific software supplied by the vendor, which is harder to maintain on end-user devices, and restricts usage of the VPN to managed devices.
+
+SSL VPNs are often cited as being the preferred choice for remote access. They operate on layers 5 and 6, and in a typical deployment grant access to specific services based on the user's role, the most convenient of which are browser-based applications. It is usually easier to configure an SSL VPN with more granular control over access permissions, which can provide a more secure environment for remote access in some cases. Furthermore, SSL/TLS is inherently supported by modern devices, and can usually be deployed without the need for specialist client-side software, or with lightweight browser-based clients otherwise. These lightweight clients can often also run local checks to ensure that connecting machines meet certain requirements before they are granted access - a feature that would be much harder to achieve with IPSec.
+
+In both cases one can be configured to achieve similar things as the other - SSL VPNs can be used to simply create a tunnel with full network access, and IPSec VPNs can be locked-down to specific services - however it is widely agreed that they are better suited to the above scenarios.
+
+However, for exactly these reasons, many organisations will use a combination of both; often an IPSec VPN for site-to-site connections and SSL for remote access.
+
+There are a number of references on the subject of SSL vs IPSec (some of these are directly from vendors):
+
+https://supportforums.cisco.com/document/113896/quick-overview-ipsec-and-ssl-vpn-technologies
+http://netsecurity.about.com/cs/generalsecurity/a/aa111703.htm
+http://www.sonicwall.com/downloads/EB_Why_Switch_from_IPSec_to_SSL_VPN.pdf
+http://searchsecurity.techtarget.com/feature/Tunnel-vision-Choosing-a-VPN-SSL-VPN-vs-IPSec-VPN
+http://www.networkworld.com/article/2287584/lan-wan/ipsec-vs--ssl-vpns.html
+End-to-End Encryption
+
+In some of the above cases, such as IPSec VPNs and SSL VPN tunnels, you may not be getting end-to-end encryption with the actual service you're using. This is where using an additional layer of SSL/TLS comes in handy.
+
+Say you're remote and trying to connect to an internally hosted web application via an IPSec VPN. If you use the HTTP protocol via your browser, your traffic is encrypted whilst it is running through the VPN tunnel itself, but it is then decrypted when it hits the remote VPN endpoint, and travels over the internal network in cleartext. This might be acceptable in some use cases, but in the interest of defence in depth, we ideally want to know that our data cannot be intercepted anywhere between you and the actual service itself. By connecting to this application over HTTPS, you effectively have two layers of security: one between you and the VPN endpoint, and another travelling through that (between you and the web server itself).
+
+Of course, this is not limited to HTTPS - you should equally employ other secure protocols like SSH, FTPS, SMTP with STARTTLS etc etc.
+
+
+Q: 
+https://stackoverflow.com/questions/3747584/openssl-vs-ipsec
+
+Just a very general question, but can somebody tell me when I use openSSL and when IPSEC to secure data transfer over the internet? It seems both of them are doing the same, only at different levels of the network protocol. So I am not absolutely sure why we need both of them.  Cheers for your help
+
+A: 
+IPSec is based on a configuration file that runs in the background and encrypts all the data between two machines. This encryption is based on IP pairs, an initiator and a responder (at least that's the configuration they use at my workplace, which more or less conforms to the standards). ALL the IP traffic between the two machines is then encrypted. Neither the type nor the content of the traffic is shown. It has its own encapsulation that encapsulates the WHOLE packet (including all the headers that the packet previously had). The packet is then decapsulated (if that's a word) at the other end to get a fully formed packet (not just the payload). The encryption might be using the encryption provided by SSL (e.g. OpenSSL).
+
+SSL, on the other hand, encrypts the data and then you can do what ever you want with it. You can put it on a USB and then give it to someone or just keep it encrypted locally to prevent data theft or send it over the internet or a network (in which case the packet itself won't be encrypted, only the payload, which will be encrypted by SSL).
+
+A: 
+Yes, different levels of the network protocol. One is implemented in the OS and the other in an application.
+So the reason that both are needed:
+- IPSEC can secure all traffic including that from applications that don't use encryption. But, both sides must use an OS that supports IPSEC and must be configured by the system administrator.
+- SSL can secure the traffic for one application. It does not need to use a particular OS and it does not need administrator access permissions to configure it.
+
+A: 
+You are getting it all wrong buddy...IPSEC is required for a secure communication between two machines.
+
+Like you want to send a packet to other machine but you want that no one could possibly even determine what protocol you are using (tcp/udp.. etc) then you use this IPSEC. and it is not all over there is so much to explore about IPSEC.  openssl is you can say just a encrytion/authentication functions library.  
+
+A clear difference could be understood wh a little example.  Suppose you want to secure traffic between two machines so you create secure encrypted packet , send it to other machine there it needs to be decrypted based on security associations.All this is part of IPSEC Protocol.  While when encrypting the packet on your sending machine you may have used some C/Linux functions to encrypt the packet.This is where openssl comes in place.  Similarly on the other end when you will capture the packet and extract the required part then you can decrypt it using openssl function used on your machine.
+
+
+IPSEC vs SLL in real life
+
+https://www.lifewire.com/vpns-ipsec-vs-ssl-2486720
+
+Traditional IPSec VPNs
+Traditional VPN’s rely on IPSec (Internet Protocol Security) to tunnel between the two endpoints. IPSec works on the Network Layer of the OSI Model- securing all data that travels between the two endpoints without an association to any specific application. When connected on an IPSec VPN the client computer is “virtually” a full member of the corporate network- able to see and potentially access the entire network.
+
+The majority of IPSec VPN solutions require third-party hardware and/or software. In order to access an IPSec VPN, the workstation or device in question must have an IPSec client software application installed. This is both a pro and a con.
+
+The pro is that it provides an extra layer of security if the client machine is required not only to be running the right VPN client software to connect to your IPSec VPN, but also must have it properly configured. These are additional hurdles that an unauthorized user would have to get over before gaining access to your network.
+
+The con is that it can be a financial burden to maintain the licenses for the client software and a nightmare for tech support to install and configure the client software on all remote machines- especially if they can’t be on site physically to configure the software themselves.
+
+SSL VPNs
+It is this con which is generally touted as one of the largest pros for the rival SSL (Secure Sockets Layer) VPN solutions. SSL is a common protocol and most web browsers have SSL capabilities built in. Therefore almost every computer in the world is already equipped with the necessary “client software” to connect to an SSL VPN.
+
+Another pro of SSL VPN’s is that they allow more precise access control. First of all they provide tunnels to specific applications rather than to the entire corporate LAN. So, users on SSL VPN connections can only access the applications that they are configured to access rather than the whole network. Second, it is easier to provide different access rights to different users and have more granular control over user access.
+
+A con of SSL VPN’s though is that you are accessing the application(s) through a web browser which means that they really only work for web-based applications. It is possible to web-enable other applications so that they can be accessed through SSL VPN’s, however doing so adds to the complexity of the solution and eliminates some of the pros.
+
+Having direct access only to the web-enabled SSL applications also means that users don’t have access to network resources such as printers or centralized storage and are unable to use the VPN for file sharing or file backups.
+
+SSL VPN’s have been gaining in prevalence and popularity; however they are not the right solution for every instance. Likewise, IPSec VPN’s are not suited for every instance either. Vendors are continuing to develop ways to expand the functionality of the SSL VPN and it is a technology that you should watch closely if you are in the market for a secure remote networking solution. For now, it is important to carefully consider the needs of your remote users and weigh the pros and cons of each solution to determine what works best for you.
+
+
+CREATE X509 USING OPENSSL AND/OR IPSEC?
+
+https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
+
+You'll need to familiarize yourself with the terminology and mechanisms first.
+
+An X.509 certificate, by definition, does not include a private key. Instead, it is a CA-signed version of the public key (along with any attributes the CA puts into the signature). The PEM format really only supports separate storage of the key and the certificate - although you can then concatenate the two.
+
+In any case, you'll need to invoke 20+ different functions of the OpenSSL API to create a key and a self-signed certificate. An example is in the OpenSSL source itself, in demos/x509/mkcert.c
+
+For a more detailed answer, please see Nathan Osman's explanation below.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
