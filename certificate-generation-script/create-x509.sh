@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this script assumes that the folders ca/router, ca/intermediate, router and mobile worker pre-exist having a corresponding openssl.cnf scirpt inside.
+# this script assumes that the folders ca/router, ca/intermediate, router and mobile user pre-exist having a corresponding openssl.cnf scirpt inside.
 
 
 ######### ROOT CA ###########
@@ -121,52 +121,52 @@ cp ./ca/intermediate/signed/router.cert.pem ./router/ipsec/certs
 chmod 444 ./router/ipsec/certs/router.cert.pem
 
 
-################# MOBILE-WORKER-0 ########
-# prep the mobile worker dirs
+################# MOBILE-USER-0 ########
+# prep the mobile user dirs
 cd ${X509DIR}
-cd mobile-worker-0
+cd mobile-user-0
 touch ipsec.conf ipsec.conf.x509 ipsec.secrets
 mkdir ipsec
 cd ipsec
 mkdir cacerts certs csr private
 cd ../
 
-# generate the first's mobile worker key
-openssl genrsa  -out ipsec/private/mobile-worker-0.key.pem 1024
-chmod 400 ipsec/private/mobile-worker-0.key.pem
+# generate the first's mobile user key
+openssl genrsa  -out ipsec/private/mobile-user-0.key.pem 1024
+chmod 400 ipsec/private/mobile-user-0.key.pem
 
-# generate the mobile-worker-0 cert
+# generate the mobile-user-0 cert
 openssl req -config ./openssl.cnf \
-      -key ipsec/private/mobile-worker-0.key.pem \
+      -key ipsec/private/mobile-user-0.key.pem \
       -new -sha256 \
-      -out ipsec/csr/mobile-worker-0.csr.pem
+      -out ipsec/csr/mobile-user-0.csr.pem
 
 
-######### INTERMDEDIATE CA SIGNS MOBILE-WORKER-0 CSR #################
-# send the mobile-worker-0 cert csr to the intermediate ca
+######### INTERMDEDIATE CA SIGNS MOBILE-USER-0 CSR #################
+# send the mobile-user-0 cert csr to the intermediate ca
 cd ${X509DIR}
-cp ./mobile-worker-0/ipsec/csr/mobile-worker-0.csr.pem ./ca/intermediate/unsigned/
+cp ./mobile-user-0/ipsec/csr/mobile-user-0.csr.pem ./ca/intermediate/unsigned/
 
-# get the mobile-worker-0 cert signed by the intermediate cert
+# get the mobile-user-0 cert signed by the intermediate cert
 cd ./ca/intermediate/
 openssl ca -config ./openssl.cnf \
       -days 375 \
       -notext -md sha256 \
-      -in unsigned/mobile-worker-0.csr.pem \
-      -out signed/mobile-worker-0.cert.pem
+      -in unsigned/mobile-user-0.csr.pem \
+      -out signed/mobile-user-0.cert.pem
 
 # verify the cert
-openssl x509 -noout -text -in signed/mobile-worker-0.cert.pem
+openssl x509 -noout -text -in signed/mobile-user-0.cert.pem
  
-# return it to the mobile-worker-0
+# return it to the mobile-user-0
 cd ${X509DIR}
-cp ./ca/intermediate/signed/mobile-worker-0.cert.pem ./mobile-worker-0/ipsec/certs  
-chmod 444 ./mobile-worker-0/ipsec/certs/mobile-worker-0.cert.pem
+cp ./ca/intermediate/signed/mobile-user-0.cert.pem ./mobile-user-0/ipsec/certs  
+chmod 444 ./mobile-user-0/ipsec/certs/mobile-user-0.cert.pem
 
 
 ################# PUT THE ROOT CERT ON ALL CLIENTS ########
 cd ${X509DIR}
 cp ./ca/root/certs/ca.cert.pem ./router/ipsec/cacerts/
-cp ./ca/root/certs/ca.cert.pem ./mobile-worker-0/ipsec/cacerts/
+cp ./ca/root/certs/ca.cert.pem ./mobile-user-0/ipsec/cacerts/
 
 echo "/// SCRIPT FINISHED SUCCESSFULLY! ///"
