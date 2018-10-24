@@ -1,9 +1,9 @@
-internet:ca
+# internet:ca
 
-hostile:internet
-apache:internet
+# hostile:internet
+# apache:internet
 
-router:hostile
+# router:hostile
 
-internal-host:router
-mobile-user-0:router
+# internal-host:router
+# mobile-user-0:router
