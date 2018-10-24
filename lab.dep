@@ -1,0 +1,9 @@
+internet:ca
+
+hostile:internet
+apache:internet
+
+router:hostile
+
+internal-host:router
+mobile-user-0:router

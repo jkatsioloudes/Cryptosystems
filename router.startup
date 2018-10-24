@@ -9,3 +9,5 @@ ifconfig eth2 hw ether 00:00:03:33:33:33
 ifconfig eth2 213.1.133.2/27
 
 route add default gw 213.1.133.1
+
+service ipsec start

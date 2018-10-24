@@ -4,3 +4,5 @@ ifconfig eth5 hw ether 00:00:05:55:55:55
 ifconfig eth5 32.0.0.2/3
 
 route add default gw 32.0.0.1
+
+service ipsec start
