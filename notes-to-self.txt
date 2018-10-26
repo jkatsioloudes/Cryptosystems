@@ -28,3 +28,74 @@ internal-host 	internet (32.0.0.1)		N
 internal-host 	apache (213.1.133.3)		N
 internal-host 	mobile-user-0 (32.0.0.2)	N
 
+
+ESP notes
+
+ipsec
+Firstly, a test on what is encrypted and what is not in the 'ipsec' lab provided to us.
+Based on my findings, this wholly depends on the tunelled addresses, meaning if those
+are the internal correspondings of rA and rB, otherwise if it is the public then we have
+plain text, in detail:
+
+Topology:
+
+a (private 172.22.22.42)  
+
+rA (private 172.22.22.41  public 192.0.2.2)	
+
+Internet (public 192.0.2.1  public 198.51.100.1)
+
+rB (private 10.0.0.1  public 198.51.100.2)
+
+b (private 10.0.0.2)
+
+
+Investigation of what is encrypted using both ping and netcat.
+
+Example:
+
+from 'a'	nc -l -p 8888
+from 'rB'	nc 198.51.100.1 8888
+
+However in the following example we can choose from which address we are connecting
+in case the server has both private and public:
+
+from 'rB'	nc -l -p 8888
+from 'a'	nc 198.51.100.2 8888 	(this is rB's public)
+from 'a'	nc 10.0.0.1 8888	(this is rB's private)
+
+
+FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT				RESULT?
+[1.pcap]
+Internet 		a		 		"hello from Internet to a"
+rB 			a				"hello from rB to a"
+b 			a				"hello from b to a"
+
+[2.pcap] 
+Internet		rA (private 172.22.22.41)	"hello from Internet to rA private"
+rB			rA (private 172.22.22.41)	"hello from rB to rA private"
+b			rA (private 172.22.22.41)	"hello from b to rA private"
+
+[3.pcap]
+Internet		rA (public 192.0.2.2)		"hello from Internet to rA public"
+rB			rA (public 192.0.2.2)		"hello from rB to rA public"
+b			rA (public 192.0.2.2)		"hello from b to rA public"
+
+[4.pcap]
+Internet		b				"hello from Internet to b"
+rA			b				"hello from rA to b"
+a			b				"hello from a to b"
+
+[5.pcap]
+Internet		rB (private 10.0.0.1)		"hello from Internet to rB private"
+rA			rB (private 10.0.0.1)		"hello from rA to rB private"
+a			rB (private 10.0.0.1)		"hello from a to rB private"
+
+[6.pcap]
+Internet		rB (public 198.51.100.2)	"hello from Internet to rb public"
+rA			rB (public 198.51.100.2)	"hello from rA to rB public"
+a			rB (public 198.51.100.2)	"hello from a to rB public"
+
+
+PMA
+
