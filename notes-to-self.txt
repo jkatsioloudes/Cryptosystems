@@ -1,32 +1,34 @@
 Results for different Ping Combinations:
-(BEFORE CERTIFICATES)
 
-FROM		TO				SUCCESS?
-mobile-user-0	internal-host (192.168.65.2)	N	
-mobile-user-0	router (192.168.65.1)		N	
-mobile-user-0	router (213.1.133.2)		Y
-mobile-user-0	internet (213.1.133.1)		Y
-mobile-user-0	internet (32.0.0.1)		Y	
-mobile-user-0	apache (213.1.133.3)		N
+B.C = Before Certificates 
+A.C = After Certificates (when IPSEC is established)
 
-router 		internal-host (192.168.65.2)	Y	
-router 		internet (213.1.133.1)		Y
-router 		internet (32.0.0.1)		Y
-router 		apache (213.1.133.3)		Y
-router 		mobile-user-0 (32.0.0.2)	Y	
+FROM		TO				SUCCESS B.C?	SUCCESS A.C?
+mobile-user-0	internal-host (192.168.65.2)	N		Y (changed)
+mobile-user-0	router (192.168.65.1)		N		Y (changed)	
+mobile-user-0	router (213.1.133.2)		Y		Y
+mobile-user-0	internet (213.1.133.1)		Y		Y
+mobile-user-0	internet (32.0.0.1)		Y		Y
+mobile-user-0	apache (213.1.133.3)		N		N
 
-internet 	internal-host (192.168.65.2)	Net unreach
-internet 	router (192.168.65.1)		Net unreach
-internet 	router (213.1.133.2)		Y
-internet 	apache (213.1.133.3)		Y
-internet 	mobile-user-0 (32.0.0.2)	Y
+router 		internal-host (192.168.65.2)	Y		Y	
+router 		internet (213.1.133.1)		Y		Y
+router 		internet (32.0.0.1)		Y		Y
+router 		apache (213.1.133.3)		Y		Y
+router 		mobile-user-0 (32.0.0.2)	Y		Y
 
-internal-host 	router (192.168.65.1)		Y	
-internal-host 	router (213.1.133.2)		Y	
-internal-host 	internet (213.1.133.1)		N
-internal-host 	internet (32.0.0.1)		N	
-internal-host 	apache (213.1.133.3)		N
-internal-host 	mobile-user-0 (32.0.0.2)	N
+internet 	internal-host (192.168.65.2)	Net unreach	Net unreach
+internet 	router (192.168.65.1)		Net unreach	Net unreach
+internet 	router (213.1.133.2)		Y		Y	
+internet 	apache (213.1.133.3)		Y		Y
+internet 	mobile-user-0 (32.0.0.2)	Y		Y
+
+internal-host 	router (192.168.65.1)		Y		Y
+internal-host 	router (213.1.133.2)		Y		Y
+internal-host 	internet (213.1.133.1)		N		N
+internal-host 	internet (32.0.0.1)		N		N
+internal-host 	apache (213.1.133.3)		N		N
+internal-host 	mobile-user-0 (32.0.0.2)	N		Y (changed)
 
 
 ESP notes
@@ -52,17 +54,21 @@ b (private 10.0.0.2)
 
 Investigation of what is encrypted using both ping and netcat.
 
+Assumption:
+
+Sniffing traffic from the hostile using: tcpdump -v -s0 -i any -w /hostlab/name.pcap
+
 Example:
 
-from 'a'	nc -l -p 8888
-from 'rB'	nc 198.51.100.1 8888
+from 'rB'	execute in 'rB': nc 198.51.100.1 8888
+to 'a'		execute in 'a': nc -l -p 8888
 
 However in the following example we can choose from which address we are connecting
 in case the server has both private and public:
 
-from 'rB'	nc -l -p 8888
-from 'a'	nc 198.51.100.2 8888 	(this is rB's public)
-from 'a'	nc 10.0.0.1 8888	(this is rB's private)
+from 'a'	execute in 'a': nc 198.51.100.2 8888 	(this is rB's public)
+from 'a'	execute in 'a': nc 10.0.0.1 8888	(this is rB's private)
+to 'rB'		execute in 'rB': nc -l -p 8888
 
 
 FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT				RESULT?
@@ -112,20 +118,37 @@ that the public one is the one being written in the left and right in ipsec.conf
 
 PMA
 
+Assumption:
+
+Sniffing traffic from the hostile using: tcpdump -v -s0 -i any -w /hostlab/name.pcap
+
+Example:
+
+from 'mobile-user-0'	execute in 'mobile-user-0': nc -l -p 8888
+to 'internal-host'	execute in 'internal-host': nc 32.0.0.2 8888
+
+However in the following example we can choose from which address we are connecting
+in case the server has both private and public:
+
+from 'mobile-user-0'	execute in 'mobile-user-0': nc 198.51.100.2 8888  (this is router's public)
+from 'mobile-user-0'	execute in 'mobile-user-0': nc 10.0.0.1 8888  (this is router's private)
+to 'router'		execute in 'router': nc -l -p 8888
+
+
 FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT					RESULT?
 
 	[1.pcap]
-mobile-user-0		internal-host			"hello from mobile-user-0 to internal-host"			
+mobile-user-0		internal-host			"hello from mobile-user-0 to internal-host"	encr	
 
 	[2.pcap]
-mobile-user-0 		router (private 192.168.65.1)	"hello from mobile-user-0 to router private"	
+mobile-user-0 		router (private 192.168.65.1)	"hello from mobile-user-0 to router private"	encr
 
 	[3.pcap]
-mobile-user-0		router (public 213.1.133.2)	"hello from mobile-user-0 to router public"
+mobile-user-0		router (public 213.1.133.2)	"hello from mobile-user-0 to router public"	not encr
 
 	[4.pcap]
-internal-host		mobile-user-0			"hello from internal-host to mobile-user-0"
+internal-host		mobile-user-0			"hello from internal-host to mobile-user-0"	encr
 
 	[5.pcap]
-router 			mobile-user-0			"hello from router to mobile-user-0"
+router 			mobile-user-0			"hello from router to mobile-user-0"		encr
 
