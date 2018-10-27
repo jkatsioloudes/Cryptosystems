@@ -66,6 +66,7 @@ from 'a'	nc 10.0.0.1 8888	(this is rB's private)
 
 
 FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT				RESULT?
+
 [1.pcap]
 Internet 		a (reverse it, from a to Int)	"hello from Internet to a"
 rB 			a				"hello from rB to a"			encr
@@ -111,3 +112,15 @@ that the public one is the one being written in the left and right in ipsec.conf
 
 PMA
 
+FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT					RESULT?
+
+[1.pcap]
+mobile-user-0		internal-host			"hello from mobile-user-0 to internal-host"			
+
+mobile-user-0 		router (private 192.168.65.1)	"hello from mobile-user-0 to router private"	
+
+mobile-user-0		router (public 213.1.133.2)	"hello from mobile-user-0 to router public"
+
+internal-host		mobile-user-0			"hello from internal-host to mobile-user-0"
+	
+router 			mobile-user-0			"hello from router to mobile-user-0"
