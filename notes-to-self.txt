@@ -73,32 +73,32 @@ to 'rB'		execute in 'rB': nc -l -p 8888
 
 FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT				RESULT?
 
-	[1.pcap]
+[1.pcap]
 Internet 		a (reverse it, from a to Int)	"hello from Internet to a"
 rB 			a				"hello from rB to a"			encr
 b 			a				"hello from b to a"			encr
 
-	[2.pcap] 
+[2.pcap] 
 Internet		rA (private 172.22.22.41)	"hello from Internet to rA private"
 rB			rA (private 172.22.22.41)	"hello from rB to rA private"		encr
 b			rA (private 172.22.22.41)	"hello from b to rA private"		encr
 
-	[3.pcap]
+[3.pcap]
 Internet		rA (public 192.0.2.2)		"hello from Internet to rA public"
 rB			rA (public 192.0.2.2)		"hello from rB to rA public"		not encr
 b			rA (public 192.0.2.2)		"hello from b to rA public"		not encr
 
-	[4.pcap]
+[4.pcap]
 Internet		b				"hello from Internet to b"
 rA			b				"hello from rA to b"			encr
 a			b				"hello from a to b"			encr
 
-	[5.pcap]
+[5.pcap]
 Internet		rB (private 10.0.0.1)		"hello from Internet to rB private"
 rA			rB (private 10.0.0.1)		"hello from rA to rB private"		encr
 a			rB (private 10.0.0.1)		"hello from a to rB private"		encr
 
-	[6.pcap]
+[6.pcap]
 Internet		rB (public 198.51.100.2)	"hello from Internet to rb public"
 rA			rB (public 198.51.100.2)	"hello from rA to rB public"		not encr
 a			rB (public 198.51.100.2)	"hello from a to rB public"		not encr
@@ -137,18 +137,38 @@ to 'router'		execute in 'router': nc -l -p 8888
 
 FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT					RESULT?
 
-	[1.pcap]
+[1.pcap]
 mobile-user-0		internal-host			"hello from mobile-user-0 to internal-host"	encr	
 
-	[2.pcap]
+[2.pcap]
 mobile-user-0 		router (private 192.168.65.1)	"hello from mobile-user-0 to router private"	encr
 
-	[3.pcap]
+[3.pcap]
 mobile-user-0		router (public 213.1.133.2)	"hello from mobile-user-0 to router public"	not encr
 
-	[4.pcap]
+[4.pcap]
 internal-host		mobile-user-0			"hello from internal-host to mobile-user-0"	encr
 
-	[5.pcap]
+[5.pcap]
 router 			mobile-user-0			"hello from router to mobile-user-0"		encr
+
+
+Testing the same with the second mobile user
+
+FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT					RESULT?
+
+[6.pcap]
+mobile-user-1		internal-host			"hello from mobile-user-1 to internal-host"	encr	
+
+[7.pcap]
+mobile-user-1 		router (private 192.168.65.1)	"hello from mobile-user-1 to router private"	encr
+
+[8.pcap]
+mobile-user-1		router (public 213.1.133.2)	"hello from mobile-user-1 to router public"	not encr
+
+[9.pcap]
+internal-host		mobile-user-1			"hello from internal-host to mobile-user-1"	encr
+
+[10.pcap]
+router 			mobile-user-1			"hello from router to mobile-user-1"		encr
 
