@@ -1,3 +1,6 @@
+ipsec.conf DOCUMENTATION:
+https://wiki.strongswan.org/projects/strongswan/wiki/ConnSection
+
 Results for different Ping Combinations:
 
 B.C = Before Certificates 
