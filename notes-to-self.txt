@@ -153,7 +153,7 @@ internal-host		mobile-user-0			"hello from internal-host to mobile-user-0"	encr
 router 			mobile-user-0			"hello from router to mobile-user-0"		encr
 
 
-Testing the same with the second mobile user
+Testing the same with the second mobile user called mobile-user-1.
 
 FROM (nc ip port)	TO (nc -l -p port)		PLAIN TEXT SENT					RESULT?
 
