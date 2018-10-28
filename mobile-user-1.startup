@@ -1,0 +1,10 @@
+# This is a mobile worker/user connecting from outside.
+
+ifconfig eth8 hw ether 00:00:08:88:88:88
+ifconfig eth8 32.0.0.3/3
+
+route add default gw 32.0.0.1
+
+sysctl -p
+
+service ipsec start
