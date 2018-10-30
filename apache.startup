@@ -2,3 +2,10 @@
 
 ifconfig eth6 hw ether 00:00:06:66:66:66
 ifconfig eth6 213.1.133.3/27
+
+sysctl -p
+
+a2enmod ssl
+a2ensite default-ssl.conf
+service apache2 start
+#apache2ctl configtest
