@@ -355,12 +355,24 @@ Commercial CA management tools like Microsoft's are also often used for large sc
 The generated leaf (end) certificates need to authenticate the corresponding peer's IKE ID for authentication to succeed.
 
 
+Certificate Sources
+
+Grace's link:
+https://www.digitalocean.com/community/tutorials/how-to-create-a-ssl-certificate-on-apache-for-ubuntu-14-04
+
+Kurt youtube video: (WATCH IT to see if it shows the overwrites)
+www.youtube.com/watch?v=bp22h1KTqyo
 
 
+Notes on Certificates
 
+-sites-available was the hack that seems to overwrite what apache is doing but this needs more research.
+- if we comment out the lines of default-ssl.conf that point into the certificate and the names of the server (server alias etc) then apache settings then apache fails to boot whereas i would expect it to book okay but have no encryption.  Other ways to achieve that might possibly include to change what enables our settings of default-ssl.conf to take place inside apache.startup.
+- NOTE: if i don't manage to fix the hostname resolution then it worths it to do issue a certificate with a CN that matches the IP address of apache 213.1.133.3 so that lynx https does not complain.
 
-
-
+HTTPs denial:
+   
+Since both the CA and intermediate are certificates self-signed by me this means that wget, curl, lynx, elinks etc will not validate the certificate but it will still encrypt the communication which is what I care about.
 
 
 
