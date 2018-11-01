@@ -375,4 +375,70 @@ HTTPs denial:
 Since both the CA and intermediate are certificates self-signed by me this means that wget, curl, lynx, elinks etc will not validate the certificate but it will still encrypt the communication which is what I care about.
 
 
+POLISHING
+
+My strongswan version is 5.3.5 (run ipsec version).
+Grace has 
+
+Notes from the strongswan documentation from:
+https://wiki.strongswan.org/projects/strongswan/wiki/IntroductionTostrongSwan
+
+Regarding DNS:
+Gateway: The gateway is usually your firewall, but this can be any host within your network.
+Often the gateway is also able to serve a small network with DHCP and DNS.
+In the image above the hosts moon and sun serve as gateways for the internal hosts alice and bob,
+respectively.
+
+Regarding 'winnetou' which seemed liked a server:
+Remote hosts / Host-to-Host: This can be a remote web server or a backup system. This is illustrated
+in the image by host winnetou and either of the gateways. The connection between the two hosts can
+usually be initiated by either one of them
+
+IKE_SA:
+strongSwan is basically a keying daemon, which uses the Internet Key Exchange protocols (IKEv1 and IKEv2) to establish security associations (SA) between two peers. IKE provides strong authentication of both peers and derives unique cryptographic session keys. Such an IKE session is often denoted IKE_SA in our documentation.
+
+In computing, Internet Key Exchange (IKE, sometimes IKEv1 or IKEv2, depending on version) is the protocol used to set up a security association (SA) in the IPsec protocol suite.
+
+Some insights:
+The mentioned distinction between policies and SAs often leads to misconceptions. For instance, referring to the image
+above, if host moon has a site-to-site tunnel to host sun (connecting the two networks 10.1.0.0/24 and 10.2.0.0/24),
+and host carol has a roadwarrior connection to host sun (from which carol received a virtual IP address of 10.3.0.10),
+then carol wont be able to automatically communicate with alice, even if forwarding is enabled on sun. This is because
+there is no IPsec policy allowing traffic between carol (10.3.0.10) and alice (10.1.0.10). An additional SA between moon
+and sun, connecting the virtual subnet 10.3.0.0/24 with 10.1.0.0/24 would be a possible solution to this issue.
+This is the reason charon, by default, installs specific routes to the remote part of the TS (in newer versions of charon (>5.5.0),
+routes aren't installed for transport mode CHILD_SAs).
+
+Regarding DNS
+Something is mentioned in wikipedia page of Strongswan regarding resolve.conf file.
+
+on IPSEC:
+The IPsec is an open standard as a part of the IPv4 suite. IPsec uses the following protocols to perform various functions:[8][9]
+
+- Authentication Headers (AH) provides connectionless data integrity and data origin authentication for IP datagrams and provides protection against replay attacks.[10][11]
+- Encapsulating Security Payloads (ESP) provides confidentiality, connectionless integrity, data-origin authentication, an anti-replay service (a form of partial sequence integrity), and limited traffic-flow confidentiality.[1]
+- Security Associations (SA) provides the bundle of algorithms and data that provide the parameters necessary for AH and/or ESP operations. The Internet Security Association and Key Management Protocol (ISAKMP) provides a framework for authentication and key exchange,[12] with actual authenticated keying material provided either by manual configuration with pre-shared keys, Internet Key Exchange (IKE and IKEv2), Kerberized Internet Negotiation of Keys (KINK), or IPSECKEY DNS records.
+
+
+Public Key Authentication: 
+This uses RSA or ECDSA X.509 certificates to verify the authenticity of the peer.
+
+- Certificates can be self-signed, in which case they have to be installed on all peers, or signed by a common Certificate Authority (CA). The latter simplifies deployment and configuration a lot as the gateway only needs the CA certificate to authenticate all peers that provide a valid certificate signed by that CA.
+- Certificate Revocation Lists (CRLs) or the Online Certificate Status Protocol (OCSP) may be used to verify the validity of certificates.
+To securely store private keys smart cards may be used via the PKCS#11 plugin.
+In order to prevent man-in-the-middle attacks the identity claimed by the peer has to be confirmed by the certificate, either by the subject or a subjectAltName extension.
+
+Pre-Shared-Key (PSK): 
+A pre-shared-key is an easy to deploy option but it requires strong secrets to be secure.
+If the PSK is known to many users (which is often the case with IKEv1 XAuth with PSK) any user who knows the secret could impersonate the gateway. Therefore this method is not recommended for large scale deployments.
+
+
+
+
+
+
+
+
+
+
 
