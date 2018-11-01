@@ -354,7 +354,6 @@ Commercial CA management tools like Microsoft's are also often used for large sc
 
 The generated leaf (end) certificates need to authenticate the corresponding peer's IKE ID for authentication to succeed.
 
-
 Certificate Sources
 
 Grace's link:
@@ -375,4 +374,17 @@ HTTPs denial:
 Since both the CA and intermediate are certificates self-signed by me this means that wget, curl, lynx, elinks etc will not validate the certificate but it will still encrypt the communication which is what I care about.
 
 
+Perfect Forward Secrecy (PFS)
+
+PFS is a must have for every IPsec tunnel. Using PFS will make the endpoints negotiate a new key for each IKE and/or IPsec SA upon rekey or reauthentication event. This protects the confidentiality of the traffic, if the IKE shared secret is leaked. Note, that the keys of the first SA of a new IKEv2 connection are derived from the IKE shared secret. However, subsequent SAs will use new keys if PFS is used.
+
+PFS for strongSwan 5.x onwards is enabled by appending a DH group to the ESP or AH cipher settings. Using PFS introduces no significant performance overhead, unless you rekey more than 80 IPsec SAs per second. Refer to this document for the crypthographic strength and public key handshake speed on some example hardware.
+
+Configurations:	https://wiki.strongswan.org/projects/strongswan/wiki/UsableExamples
+Virtual IP:	https://wiki.strongswan.org/projects/strongswan/wiki/VirtualIP
+Security Recc:	https://wiki.strongswan.org/projects/strongswan/wiki/SecurityRecommendations
+User Document:	https://wiki.strongswan.org/projects/strongswan/wiki/UserDocumentation#HOWTOs
+IPsec conf:	https://wiki.strongswan.org/projects/strongswan/wiki/ConfigSetupSection
+ipsec:		https://wiki.strongswan.org/projects/strongswan/wiki/IpsecCommand
+strong4.2conf:	https://www.strongswan.org/docs/readme4.htm#section_2.6
 
