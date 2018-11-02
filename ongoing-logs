@@ -361,21 +361,30 @@ PFS is a must have for every IPsec tunnel. Using PFS will make the endpoints neg
 
 PFS for strongSwan 5.x onwards is enabled by appending a DH group to the ESP or AH cipher settings. Using PFS introduces no significant performance overhead, unless you rekey more than 80 IPsec SAs per second. Refer to this document for the crypthographic strength and public key handshake speed on some example hardware.
 
-Configurations:	https://wiki.strongswan.org/projects/strongswan/wiki/UsableExamples
-Virtual IP:	https://wiki.strongswan.org/projects/strongswan/wiki/VirtualIP
-Security Recc:	https://wiki.strongswan.org/projects/strongswan/wiki/SecurityRecommendations
-User Document:	https://wiki.strongswan.org/projects/strongswan/wiki/UserDocumentation#HOWTOs
-IPsec conf:	https://wiki.strongswan.org/projects/strongswan/wiki/ConfigSetupSection
-ipsec:		https://wiki.strongswan.org/projects/strongswan/wiki/IpsecCommand
-strong4.2conf:	https://www.strongswan.org/docs/readme4.htm#section_2.6
+Configurations:	[done] following the approach of having dpdaction=restart for roadwarriors and router.
+https://wiki.strongswan.org/projects/strongswan/wiki/UsableExamples
+
+Virtual IP:
+https://wiki.strongswan.org/projects/strongswan/wiki/VirtualIP
 
 
+SecurityRecommendations
+
+User Document:	
+https://wiki.strongswan.org/projects/strongswan/wiki/UserDocumentation#HOWTOs
+
+IPsec conf:
+https://wiki.strongswan.org/projects/strongswan/wiki/ConnSection
+https://wiki.strongswan.org/projects/strongswan/wiki/ConfigSetupSection
+
+ipsec:
+https://wiki.strongswan.org/projects/strongswan/wiki/IpsecCommand
+
+strong4.2conf:	
+https://www.strongswan.org/docs/readme4.htm#section_2.6
 
 
-
-
-
-
-
+Leftsendcert=always is a result of https://www.strongswan.org/docs/readme4.htm#section_5.7 from not achieving a correct connectivity with the =never
+option.
 
 
