@@ -7,5 +7,4 @@ sysctl -p
 
 a2enmod ssl
 a2ensite default-ssl.conf
-service apache2 start
-#apache2ctl configtest
+service apache2 restart
