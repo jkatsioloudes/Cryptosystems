@@ -440,3 +440,6 @@ If dh-group is specified, CHILD_SA rekeying and initial negotiation include a se
 Valid values for esnmode are esn and noesn. Specifying both negotiates extended sequence number support with the peer, the default is noesn.
 
 
+Host Resolution:
+https://debian-handbook.info/browse/stable/sect.hostname-name-service.html
+
