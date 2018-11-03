@@ -175,3 +175,28 @@ internal-host		mobile-user-1			"hello from internal-host to mobile-user-1"	encr
 [10.pcap]
 router 			mobile-user-1			"hello from router to mobile-user-1"		encr
 
+
+SSL Tests
+
+SSL Engine off
+wget https:// will not complain because the ssl is off.
+
+FROM			TO		EXPECTED	RES
+[11.pcap]
+router			apache		not encr	not encr
+
+[12.pcap]
+internet		apache		not encr	not encr
+
+SSL Engine on
+both wget and curl here will complain so we can make use of curl using the -k or --insecure flag
+to avoid ssl complains.
+curl -k https://
+
+FROM			TO		EXPECTED	RES
+[13.pcap]
+router			apache		encr		encr
+
+[14.pcap]
+internet		apache		encr		encr
+
