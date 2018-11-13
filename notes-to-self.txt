@@ -59,7 +59,7 @@ Investigation of what is encrypted using both ping and netcat.
 
 Assumption:
 
-Sniffing traffic from the hostile using: tcpdump -v -s0 -i any -w /hostlab/name.pcap
+Sniffing traffic from the hostile using: tcpdump -v -s0 -i any -w /hostlab/.tests/ipsec/name.pcap
 
 Example:
 

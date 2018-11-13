@@ -297,7 +297,37 @@ cp ./ca/intermediate/signed/apache.cert.pem ./apache/ipsec/certs
 chmod 444 ./apache/ipsec/certs/apache.cert.pem
 
 
-######### CREATE PMA HIERARCHY #################
+######### CREATE PMA HIERARCHY AND COPY CERTS/KEYS #################
+#
+#	ca			apache
+#	|			|
+#	|			|
+#	etc			etc
+#	|			|
+#	|			|
+#	ipsec.d			apache2
+#	  /    \		/	\
+#	 /	\	       /     	 \
+#	/        \	      /		  \
+#	cacerts	private	     ssl	sites available
+#
+#
+#
+#
+#		router, mobile-user-N (for 0 <= N <= 2)
+#				|
+#				|
+#				etc
+#			 /	|      \
+#			/	|	\
+#		       /	|        \
+#		ipsec.conf    ipsec.d	 ipsec.secrets
+#				/   |   \
+#		      	       /    |    \	
+#			      /	    |     \
+#			cacerts	  certs	private
+#
+
 cd ${X509DIR}
 mkdir CDP-PMA; cd CDP-PMA
 PMA=$PWD
