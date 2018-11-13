@@ -5,13 +5,9 @@ ifconfig eth7 hw ether 00:00:07:77:77:77
 ifconfig eth7 213.1.133.254
 
 
-# Starts capturing traffic once the lab is up. I copied and pasted the following
-# to the hostile terminal to start capturing traffic.
-
+# The following command when copied and pasted in hostile's terminal starts capturing traffic.
 # tcpdump -v -s0 -i any -w /hostlab/hostile-dump.pcap
 
-
-# Example of communication among router and mobile-user-0 to intercept data
-
-# nc -l -p 8888 (listening)
-# nc ip port 
+# Example of communication between router and mobile-users that allows interception of communication.
+# nc -l -p 8888
+# nc ip port

@@ -1,10 +1,14 @@
-# webserver connected to the public internet.
+# webserver connected to the public internet running Apache v2.2.
 
 ifconfig eth6 hw ether 00:00:06:66:66:66
 ifconfig eth6 213.1.133.3/27
 
 sysctl -p
 
+# As instructed by Schroder (2016), the following three commands are necessary to:
+# a) enables ssl
 a2enmod ssl
-a2ensite default-ssl.conf
+# b) followed by enabling our own SSL-configured virtual host and
+a2ensite default-ssl.conf.
+# c) restart the server for the new settings to take place.
 service apache2 restart
