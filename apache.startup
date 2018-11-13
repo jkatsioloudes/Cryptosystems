@@ -8,7 +8,7 @@ sysctl -p
 # As instructed by Schroder (2016), the following three commands are necessary to:
 # a) enables ssl
 a2enmod ssl
-# b) followed by enabling our own SSL-configured virtual host and
-a2ensite default-ssl.conf.
+# b) followed by enabling our own SSL-configured virtual host and 
+a2ensite default-ssl.conf
 # c) restart the server for the new settings to take place.
 service apache2 restart
